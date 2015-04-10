@@ -1,0 +1,14 @@
+*~
+*#
+*.swp
+*.swo
+*.pyc
+
+MANIFEST
+
+build
+dist
+*egg*
+man
+venv
+
