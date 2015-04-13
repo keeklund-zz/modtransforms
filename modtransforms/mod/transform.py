@@ -1,5 +1,4 @@
-import gzip
-from modtransform.mod.stream import gen_mod
+from modtransforms.mod.stream import gen_mod
 
 def do_nothing(data, delta):
     return delta
