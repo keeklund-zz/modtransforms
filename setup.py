@@ -12,14 +12,14 @@ package_data = {}
 scripts = []
 
 # python packages required for install
-install_requres = []
+install_requires = []
 
 setup_args = {
     "name"             : "modtransforms",
     "version"          : __version__,
     "author"           : "Karl Eklund",
     "author_email"     : "keklund@ad.unc.edu",
-    "description"      : "Update various file formats using MOD File"
+    "description"      : "Update various file formats using MOD File",
     "packages"         : packages,
     "package_data"     : package_data,
     "scripts"          : scripts,
