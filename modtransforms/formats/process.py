@@ -1,12 +1,15 @@
+from modtransforms.mod.transform import build_transform
+
 def gtf(args):
     out = open(args.output, 'w')
 
-    chrom_mods = build_transform(args.mod)
+    chrom_mods = build_transform(args.mod, args.reverse)
     keys = 'contig feature source start end score strand frame attributes'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
         for line in input_:
             gene = line.rstrip()
+            keys = 'contig feature source start end score strand frame attributes'
             data = {k:g for k,g in zip(keys.split(), gene.split('\t'))}
             if data.get('contig') != curr_chrom:
                 curr_chrom = data.get('contig')
@@ -27,7 +30,7 @@ def gtf(args):
 
 def smrna_gff3(args):
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod)
+    chrom_mods = build_transform(args.mod, args.reverse)
     keys = 'chrom chromStart chromEnd name score strand'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -55,7 +58,7 @@ def smrna_gff3(args):
 def smrna_bed(args):
 
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod)
+    chrom_mods = build_transform(args.mod, args.reverse)
     keys = 'chrom chromStart chromEnd name score strand'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -78,7 +81,4 @@ def smrna_bed(args):
                         '\t'.join([str(data.get(k)) for k in keys.split()]))
             except:
                 pass
-
-def file_type_error(args):
-    exit("ERROR: '%s' is not a valid input type" % args.type)
 
