@@ -1,17 +1,33 @@
 import gzip
+from modtransform.mod.stream import gen_mod
 
-def gen_mod(mod_file):
-    """Return mod file generator"""
-    with gzip.open(mod_file, 'r') as mod:
-        for line in mod:
-            if not line.startswith('#'):
-                yield line.rstrip()
+def do_nothing(data, delta):
+    return delta
 
-def build_transform(mod_file):
-    """Return nested dictionary: chr: pos1: pos2"""
+def addition(data, delta):
+    return delta + len(data)
+
+def subtraction(data, delta):
+    return delta - len(data)
+
+def error_handler(data, delta):
+    exit("Not controlling all options")
+
+def build_transform(mod_file, reverse=False):
+    """Return nested dictionary: chr: pos1: pos2.
+    
+    :reverse will map transform in opposite direction, must be type boolean
+
+    """
+    assert isinstance(reverse, bool), "reverse type error - boolean required"
     mod = gen_mod(mod_file)
     transform = {}
 
+    if reverse:
+        adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
+    else:
+        adjustment_direction = {'s': do_nothing, 'd': subtraction, 'i': addition}
+    
     chrom = ''
     while mod:
         try:
@@ -22,14 +38,8 @@ def build_transform(mod_file):
             delta = 0 
             chrom = data[1]
 
-        if data[0] == 's':
-            pass
-        elif data[0] == 'd':
-            delta = delta + -1
-        elif data[0] == 'i':
-            delta = delta + len(data[3])
-        else:
-            exit('not controlling every option')
+        handler = adjustment_direction.get(data[0], error_handler)
+        delta = handler(data[3], delta)
 
         try:
             transform[chrom].append((int(data[2]), delta))
