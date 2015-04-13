@@ -3,12 +3,32 @@
 
 """
 from os import path
-from modtransform.run.arguments import parse_arguments
+from argparse import ArgumentParser
+from modtransforms.mod.transform import build_transform
+from modtransforms.formats.information import file_types
 
-def main():
-    pass
+def main(args):
+    handler = file_types.get(args.type)
+    handler(args)
 
 if __name__ == "__main__":
-    parse_arguments()
 
-
+    parser = ArgumentParser(prog=path.splitext(path.basename(__file__))[0],
+                            description='Update positions using MOD File')
+    parser.add_argument('--mod', 
+                        required=True, 
+                        help='Required MOD File')
+    parser.add_argument('--type', 
+                        required=True, 
+                        choices=file_types.keys(),
+                        help='Enter one allowed input type')
+    parser.add_argument('--reverse',
+                        default=False,
+                        help='Boolean: reverse MOD mapping')
+    parser.add_argument('--input',
+                        required=True,
+                        help='INPUT File')
+    parser.add_argument('--output',
+                        required=True,
+                        help='OUTPUT File')
+    main(parser.parse_args())
