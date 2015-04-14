@@ -12,7 +12,10 @@ package_data = {}
 scripts = []
 
 # python packages required for install
-install_requires = []
+install_requires = [
+    "argparse >= 1.3.0",
+    "pysam >= 0.8.2.1",
+]
 
 setup_args = {
     "name"             : "modtransforms",
