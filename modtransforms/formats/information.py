@@ -1,4 +1,9 @@
-from modtransforms.formats.process import gtf, smrna_bed, smrna_gff3
+from modtransforms.formats.process import bam, gtf, smrna_bed, smrna_gff3
 
-file_types = {'gtf': gtf, 'smrna_bed': smrna_bed, 'smrna_gff3': smrna_gff3,}
+file_types = {
+    'bam': bam,
+    'gtf': gtf,
+    'smrna_bed': smrna_bed,
+    'smrna_gff3': smrna_gff3,
+}
 
