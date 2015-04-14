@@ -1,3 +1,4 @@
+from bisect import bisect_left
 from modtransforms.mod.stream import gen_mod
 
 def do_nothing(data, delta):
@@ -12,7 +13,7 @@ def subtraction(data, delta):
 def error_handler(data, delta):
     exit("Not controlling all options")
 
-def build_transform(mod_file, reverse=False):
+def build_transform(mod_file, logger, reverse=False):
     """Return nested dictionary: chr: pos1: pos2.
     
     :reverse will map transform in opposite direction, must be type boolean
@@ -44,5 +45,14 @@ def build_transform(mod_file, reverse=False):
             transform[chrom].append((int(data[2]), delta))
         except:
             transform[chrom] = [(int(data[2]), delta),]
+    logger.info("Chromosome MODification transform built")
     return transform
 
+def find_delta(positions, deltas, position):
+    idx = bisect_left(positions, position)
+    if positions[idx] == position or positions[idx] < position:
+        delta = deltas[idx]
+    else:
+        delta = deltas[idx - 1]
+    return delta
+                        
