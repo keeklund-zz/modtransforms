@@ -9,7 +9,7 @@ packages = find_packages(exclude=['*.tests',])
 package_data = {}
 
 # include useful and/or necessary scripts
-scripts = []
+scripts = ['bin/modtransform',]
 
 # python packages required for install
 install_requires = [
