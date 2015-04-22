@@ -85,11 +85,56 @@ def smrna_bed(args, logger):
 
 def bam(args, logger):
     chrom_mods = build_transform(args.mod, logger, args.reverse)
-    keys = ''
     curr_chrom = ""
 
     input_ = AlignmentFile(args.input, 'rb')
     output = AlignmentFile(args.output, 'wb', header=input_.header)
 
     for line in input_:
-        print line.seq, line.cigarstring
+        if input_.references[line.reference_id] != curr_chrom:
+            curr_chrom = input_.references[line.reference_id]
+            try:
+                positions, deltas = zip(*chrom_mods.get(curr_chrom))
+                logger.info("CONTIG: '%s'" % curr_chrom)
+            except TypeError:
+                logger.warn(
+                    "CONTIG: '%s' is not in MOD File. Skipping." % \
+                    curr_chrom)
+                positions, deltas = [], 0
+                continue
+        try:
+            start_delta = find_delta(positions,
+                                     deltas,
+                                     int(line.reference_start))
+            end_delta = find_delta(positions,
+                                   deltas,
+                                   int(line.reference_end))
+            if start_delta != end_delta:
+                hwm = start_delta
+                mod_index = []
+                for i,p in enumerate(line.get_reference_positions()):
+                    p_delta = find_delta(positions, deltas, p)
+                    if hwm != p_delta:
+                        mod_index.append((i, hwm-p_delta))
+                        hwm = p_delta
+                new_cigar = []
+                old_cigar = line.cigar
+
+                for mi in mod_index:
+                    cigarindex = 0
+                    for ci,c in enumerate(old_cigar):
+                        
+                        if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
+                            new_cigar.append((c[0], c[1] + mi[1]))
+                        else:
+                            cigarindex = cigarindex + c[1]
+                            new_cigar.append(c)
+                            
+                if len(line.cigar) < len(new_cigar):
+                    line.cigar = new_cigar[-1*len(line.cigar):]
+                else:
+                    line.cigar = new_cigar
+            line.reference_start = int(line.reference_start) + start_delta
+            output.write(line)
+        except IndexError:
+            pass
