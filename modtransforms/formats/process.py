@@ -127,9 +127,12 @@ def smrna_12_bed(args, logger):
                     end_delta = find_delta(positions, 
                                            deltas,
                                            int(data.get('chromEnd2')))
-                    start_delta = find_delta(positions, 
-                                             deltas, 
-                                             int(data.get('chromStart3')))
+                    try:
+                        start_delta = find_delta(positions, 
+                                                 deltas, 
+                                                 int(data.get('chromStart3')))
+                    except:
+                        continue
                     data['chromStart1'] = int(data.get('chromStart1')) + start_delta
                     data['chromEnd1'] = int(data.get('chromEnd1')) + end_delta
                     data['chromStart2'] = int(data.get('chromStart2')) + start_delta
