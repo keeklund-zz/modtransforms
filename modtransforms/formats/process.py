@@ -96,7 +96,7 @@ def smrna_12_bed(args, logger):
 
     out = open(args.output, 'w')
     chrom_mods = build_transform(args.mod, logger, args.reverse)
-    keys = 'chrom chromStart1 chromEnd1 name score strand chromStart2 chromEnd2 0,0,0 1 0 chromStart3'
+    keys = 'chrom chromStart chromEnd name score strand thickStart thickEnd itemRgb blockCount blockSizes blockStart'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
         for line in input_:
@@ -115,32 +115,28 @@ def smrna_12_bed(args, logger):
                         positions, deltas = [], 0
                         continue
                 try:
-                    start_delta = find_delta(positions, 
+                    c_start_delta = find_delta(positions, 
+                                               deltas, 
+                                               int(data.get('chromStart')))
+                    c_end_delta = find_delta(positions, 
+                                             deltas,
+                                             int(data.get('chromEnd')))
+                    t_start_delta = find_delta(positions, 
+                                               deltas, 
+                                               int(data.get('thickStart')))
+                    t_end_delta = find_delta(positions, 
+                                             deltas,
+                                             int(data.get('thickEnd')))
+                    b_tmp_data = find_delta(positions, 
                                              deltas, 
-                                             int(data.get('chromStart1')))
-                    end_delta = find_delta(positions, 
-                                           deltas,
-                                           int(data.get('chromEnd1')))
-                    start_delta = find_delta(positions, 
-                                             deltas, 
-                                             int(data.get('chromStart2')))
-                    end_delta = find_delta(positions, 
-                                           deltas,
-                                           int(data.get('chromEnd2')))
-                    try:
-                        start_delta = find_delta(positions, 
-                                                 deltas, 
-                                                 int(data.get('chromStart3')))
-                    except:
-                        continue
-                    data['chromStart1'] = int(data.get('chromStart1')) + start_delta
-                    data['chromEnd1'] = int(data.get('chromEnd1')) + end_delta
-                    data['chromStart2'] = int(data.get('chromStart2')) + start_delta
-                    data['chromEnd2'] = int(data.get('chromEnd2')) + end_delta
-                    try:
-                        data['chromStart3'] = int(data.get('chromStart3')) + start_delta
-                    except:
-                        pass
+                                             (int(data.get('chromStart')) + \
+                                              int(data.get('blockStart'))))
+                    b_start_delta = b_tmp_data - int(data.get('chromStart'))
+                    data['chromStart'] = int(data.get('chromStart')) + c_start_delta
+                    data['chromEnd'] = int(data.get('chromEnd')) + c_end_delta
+                    data['thickStart'] = int(data.get('thickStart')) + t_start_delta
+                    data['thickEnd'] = int(data.get('thickEnd')) + t_end_delta
+                    data['blockStart'] = int(data.get('blockStart')) + b_start_delta
                     out.write('%s\n' % \
                               '\t'.join([str(data.get(k)) for k in keys.split()]))
                 except IndexError:
