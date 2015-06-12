@@ -34,4 +34,6 @@ if __name__ == "__main__":
     parser.add_argument('--output',
                         required=True,
                         help='OUTPUT File')
+    parser.add_argument('--chrom-sizes',
+                        help='Chromosome sizes for transform output')
     main(parser.parse_args())
