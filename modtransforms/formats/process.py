@@ -2,12 +2,26 @@ from re import match
 from pysam import AlignmentFile
 from modtransforms.mod.transform import build_transform, find_delta
 
+def update_header(header, chrom_sizes_file):
+
+    return header
+
 def bam(args, logger):
+    if not args.chrom_sizes:
+        exit("Chrom sizes required for bam conversion")
+        
     chrom_mods = build_transform(args.mod, logger, args.reverse)
     curr_chrom = ""
 
     input_ = AlignmentFile(args.input, 'rb')
-    output = AlignmentFile(args.output, 'wb', header=input_.header)
+
+    header = input_.header.copy()
+    with open(args.chrom_sizes, "r") as cs_file:
+        chrom_sizes = dict(line.split() for line in cs_file)
+    for chrom in header['SQ']:
+        chrom['LN'] = int(chrom_sizes[chrom['SN']])
+    
+    output = AlignmentFile(args.output, 'wb', header=header)
 
     for line in input_:
         if input_.references[line.reference_id] != curr_chrom:
@@ -28,31 +42,34 @@ def bam(args, logger):
             end_delta = find_delta(positions,
                                    deltas,
                                    int(line.reference_end))
-            if start_delta != end_delta:
-                hwm = start_delta
-                mod_index = []
-                for i,p in enumerate(line.get_reference_positions()):
-                    p_delta = find_delta(positions, deltas, p)
-                    if hwm != p_delta:
-                        mod_index.append((i, hwm-p_delta))
-                        hwm = p_delta
-                new_cigar = []
-                old_cigar = line.cigar
+            # if start_delta != end_delta:
+            #     hwm = start_delta
+            #     mod_index = []
+            #     for i,p in enumerate(line.get_reference_positions()):
+            #         p_delta = find_delta(positions, deltas, p)
+            #         if hwm != p_delta:
+            #             mod_index.append((i, hwm-p_delta))
+            #             hwm = p_delta
+            #     new_cigar = []
+            #     old_cigar = line.cigar
 
-                for mi in mod_index:
-                    cigarindex = 0
-                    for ci,c in enumerate(old_cigar):
+            #     for mi in mod_index:
+            #         cigarindex = 0
+            #         for ci,c in enumerate(old_cigar):
                         
-                        if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
-                            new_cigar.append((c[0], c[1] + mi[1]))
-                        else:
-                            cigarindex = cigarindex + c[1]
-                            new_cigar.append(c)
-                            
-                if len(line.cigar) < len(new_cigar):
-                    line.cigar = new_cigar[-1*len(line.cigar):]
-                else:
-                    line.cigar = new_cigar
+            #             if len(old_cigar) > 1:
+            #                 if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
+            #                     new_cigar.append((c[0], c[1] + mi[1]))
+            #                 else:
+            #                     cigarindex = cigarindex + c[1]
+            #                     new_cigar.append(c)
+            #             else:
+            #                 new_cigar = old_cigar
+
+            #     if len(line.cigar) < len(new_cigar):
+            #         line.cigar = new_cigar[-1*len(line.cigar):]
+            #     else:
+            #         line.cigar = new_cigar
             line.reference_start = int(line.reference_start) + start_delta
             output.write(line)
         except IndexError:
@@ -61,14 +78,14 @@ def bam(args, logger):
 def gtf(args, logger):
     out = open(args.output, 'w')
     chrom_mods = build_transform(args.mod, logger, args.reverse)
-    keys = 'contig feature source start end score strand frame attributes'
+    keys = "seqname source feature start end score strand frame attribute"
     curr_chrom = ""
     with open(args.input, 'r') as input_:
         for line in input_:
             gene = line.rstrip()
-            data = {k:g for k,g in zip(keys.split(), gene.split('\t'))}
-            if data.get('contig') != curr_chrom:
-                curr_chrom = data.get('contig')
+            data = gene.split('\t')
+            if data[0] != curr_chrom:
+                curr_chrom = data[0]
                 try:
                     positions, deltas = zip(*chrom_mods.get(curr_chrom))
                     logger.info("CONTIG: '%s'" % curr_chrom)
@@ -81,14 +98,14 @@ def gtf(args, logger):
             try:
                 start_delta = find_delta(positions, 
                                          deltas, 
-                                         int(data.get('start')))
+                                         int(data[3]))
                 end_delta = find_delta(positions, 
                                        deltas,
-                                       int(data.get('end')))
-                data['start'] = int(data.get('start')) + start_delta
-                data['end'] = int(data.get('end')) + end_delta
+                                       int(data[4]))
+                data[3] = int(data[3]) + start_delta
+                data[4] = int(data[4]) + end_delta
                 out.write('%s\n' % \
-                          '\t'.join([str(data.get(k)) for k in keys.split()]))
+                          '\t'.join([str(d) for d in data]))
             except IndexError:
                 pass
             
