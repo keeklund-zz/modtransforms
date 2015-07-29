@@ -42,34 +42,34 @@ def bam(args, logger):
             end_delta = find_delta(positions,
                                    deltas,
                                    int(line.reference_end))
-            # if start_delta != end_delta:
-            #     hwm = start_delta
-            #     mod_index = []
-            #     for i,p in enumerate(line.get_reference_positions()):
-            #         p_delta = find_delta(positions, deltas, p)
-            #         if hwm != p_delta:
-            #             mod_index.append((i, hwm-p_delta))
-            #             hwm = p_delta
-            #     new_cigar = []
-            #     old_cigar = line.cigar
+            if start_delta != end_delta:
+                hwm = start_delta
+                mod_index = []
+                for i,p in enumerate(line.get_reference_positions()):
+                    p_delta = find_delta(positions, deltas, p)
+                    if hwm != p_delta:
+                        mod_index.append((i, hwm-p_delta))
+                        hwm = p_delta
+                new_cigar = []
+                old_cigar = line.cigar
 
-            #     for mi in mod_index:
-            #         cigarindex = 0
-            #         for ci,c in enumerate(old_cigar):
+                for mi in mod_index:
+                    cigarindex = 0
+                    for ci,c in enumerate(old_cigar):
                         
-            #             if len(old_cigar) > 1:
-            #                 if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
-            #                     new_cigar.append((c[0], c[1] + mi[1]))
-            #                 else:
-            #                     cigarindex = cigarindex + c[1]
-            #                     new_cigar.append(c)
-            #             else:
-            #                 new_cigar = old_cigar
+#                        if len(old_cigar) > 1:
+                        if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
+                            new_cigar.append((c[0], c[1] + mi[1]))
+                        else:
+                            cigarindex = cigarindex + c[1]
+                            new_cigar.append(c)
+#                        else:
+#                            new_cigar = old_cigar
 
-            #     if len(line.cigar) < len(new_cigar):
-            #         line.cigar = new_cigar[-1*len(line.cigar):]
-            #     else:
-            #         line.cigar = new_cigar
+                if len(line.cigar) < len(new_cigar):
+                    line.cigar = new_cigar[-1*len(line.cigar):]
+                else:
+                    line.cigar = new_cigar
             line.reference_start = int(line.reference_start) + start_delta
             output.write(line)
         except IndexError:
