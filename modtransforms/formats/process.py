@@ -39,6 +39,7 @@ def bam(args, logger):
             start_delta = find_delta(positions,
                                      deltas,
                                      int(line.reference_start))
+            
             end_delta = find_delta(positions,
                                    deltas,
                                    int(line.reference_end))
@@ -56,7 +57,6 @@ def bam(args, logger):
                 for mi in mod_index:
                     cigarindex = 0
                     for ci,c in enumerate(old_cigar):
-                        
 #                        if len(old_cigar) > 1:
                         if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
                             new_cigar.append((c[0], c[1] + mi[1]))
@@ -73,6 +73,8 @@ def bam(args, logger):
             line.reference_start = int(line.reference_start) + start_delta
             output.write(line)
         except IndexError:
+            pass
+        except TypeError:
             pass
 
 def gtf(args, logger):
