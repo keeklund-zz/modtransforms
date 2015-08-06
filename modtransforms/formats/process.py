@@ -71,6 +71,7 @@ def bam(args, logger):
                 else:
                     line.cigar = new_cigar
             line.reference_start = int(line.reference_start) + start_delta
+            line.reference_end = int(line.reference_end) + end_delta
             output.write(line)
         except IndexError:
             pass
