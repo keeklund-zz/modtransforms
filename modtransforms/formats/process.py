@@ -33,7 +33,7 @@ def bam(args, logger):
                 logger.warn(
                     "CONTIG: '%s' is not in MOD File. Skipping." % \
                     curr_chrom)
-                positions, deltas = [], 0
+                positions, deltas = [], []
                 continue
         try:
             start_delta = find_delta(positions,
@@ -59,7 +59,13 @@ def bam(args, logger):
                     for ci,c in enumerate(old_cigar):
 #                        if len(old_cigar) > 1:
                         if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
-                            new_cigar.append((c[0], c[1] + mi[1]))
+                            if mi[1] > 0 and mi[0] < c[1]:
+                                new_cigar.append((c[0], mi[0]))
+                                new_cigar.append((3, mi[1]))
+                                new_cigar.append((c[0], c[1] - mi[0]))
+                                print mi, c, new_cigar
+                            else:
+                                new_cigar.append((c[0], c[1] + mi[1]))
                         else:
                             cigarindex = cigarindex + c[1]
                             new_cigar.append(c)
@@ -71,7 +77,6 @@ def bam(args, logger):
                 else:
                     line.cigar = new_cigar
             line.reference_start = int(line.reference_start) + start_delta
-            line.reference_end = int(line.reference_end) + end_delta
             output.write(line)
         except IndexError:
             pass
@@ -96,7 +101,7 @@ def gtf(args, logger):
                     logger.warn(
                         "CONTIG: '%s' is not in MOD File. Skipping." % \
                         curr_chrom)
-                    positions, deltas = [], 0
+                    positions, deltas = [], []
                     continue
             try:
                 start_delta = find_delta(positions, 
@@ -132,7 +137,7 @@ def smrna_12_bed(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], 0
+                        positions, deltas = [], []
                         continue
                 try:
                     c_start_delta = find_delta(positions, 
@@ -182,7 +187,7 @@ def smrna_bed(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], 0
+                        positions, deltas = [], []
                         continue
                 try:
                     start_delta = find_delta(positions, 
@@ -217,7 +222,7 @@ def smrna_gff3(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], 0
+                        positions, deltas = [], []
                         continue
                 try:
                     start_delta = find_delta(positions, 
@@ -255,7 +260,7 @@ def smrna_lib_fa(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], 0
+                        positions, deltas = [], []
                         continue
                 try:
                     start_delta = find_delta(positions, 
@@ -292,7 +297,7 @@ def smrna_table_txt(args, logger):
                     logger.warn(
                         "CONTIG: '%s' is not in MOD File. Skipping." % \
                         curr_chrom)
-                    positions, deltas = [], 0
+                    positions, deltas = [], []
                     continue
             try:
                 start_delta = find_delta(positions, 
@@ -327,7 +332,7 @@ def smrna_txt(args, logger):
                     logger.warn(
                         "CONTIG: '%s' is not in MOD File. Skipping." % \
                         curr_chrom)
-                    positions, deltas = [], 0
+                    positions, deltas = [], []
                     continue
             try:
                 start_delta = find_delta(positions, 
