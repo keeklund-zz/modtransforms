@@ -1,11 +1,15 @@
 #!/usr/bin/env python
-"""Simply update the positional information in select formats.
+"""Update positional information in select sequencing methodologies.
+
+Program takes into account additional information (e.g. cigar strings) when 
+appropriate.  However, functionality is ultimately determined by the Furey Lab, 
+and noted in docstring where applicable.
 
 """
 from os import path
 from argparse import ArgumentParser
 from modtransforms.mod.transform import build_transform
-from modtransforms.formats.information import file_types
+from modtransform.sequencing.information import seq_types
 from modtransforms.utils.logger import build_logger
 
 def main(args):
@@ -14,26 +18,25 @@ def main(args):
     handler(args, logger)
 
 if __name__ == "__main__":
-
     parser = ArgumentParser(prog=path.splitext(path.basename(__file__))[0],
                             description=__doc__)
-    parser.add_argument('--mod', 
-                        required=True, 
+    parser.add_argument('--mod',
+                        required=True,
                         help='Required MOD File')
-    parser.add_argument('--type', 
-                        required=True, 
-                        choices=file_types.keys(),
-                        help='Enter one allowed input type')
     parser.add_argument('--reverse',
                         default=False,
                         type=bool,
                         help='Boolean: reverse MOD mapping')
+    parser.add_argument('--seq',
+                        required=True,
+                        choices=seq_types.keys(),
+                        help='Enter one allowed sequencing type')
     parser.add_argument('--input',
                         required=True,
-                        help='INPUT File')
+                        help='INPUT file')
     parser.add_argument('--output',
                         required=True,
-                        help='OUTPUT File')
+                        help='OUTPUT file')
     parser.add_argument('--chrom-sizes',
                         help='Chromosome sizes file for output species')
     main(parser.parse_args())
