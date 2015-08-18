@@ -1,6 +1,6 @@
+from bisect import bisect_left
 from os.path import exists
 from types import ModuleType
-from bisect import bisect_left
 from modtransforms.mod.stream import gen_mod
 
 def do_nothing(data, delta):
