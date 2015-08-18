@@ -5,119 +5,18 @@ import unittest
 from modtransforms.mod import transform 
 from modtransforms.utils import logger
 
-class TestDoNothing(unittest.TestCase):
-    """Test class for modtransforms.mod.transforms.do_nothing function.
-
-    """
-    def shortDescription(self):
-        return None
-    
-    def test_return_type(self):
-        """Assert return type is int.
-
-        """
-        self.assertIsInstance(transform.do_nothing("", 0), int)
-
-    def test_assert_raises(self):
-        """Assert AssertionError on input types.
-
-        """
-        self.assertRaises(AssertionError, transform.do_nothing, 0, 0)
-        self.assertRaises(AssertionError, transform.do_nothing, "", "")
-
-    def test_output_equals(self):
-        """Assert output equals specific values.
-
-        """
-        self.assertEqual(transform.do_nothing("", 0), 0)
-        self.assertEqual(transform.do_nothing("ATCG", 1), 1)
-
-
-class TestAddition(unittest.TestCase):
-    """Test class for modtransforms.mod.transforms.addition function.
-
-    """
-    def shortDescription(self):
-        return None
-    
-    def test_return_type(self):
-        """Assert return type is int.
-
-        """
-        delta = transform.addition("", 0)
-        self.assertIsInstance(delta, int)
-
-    def test_assert_raises(self):
-        """Assert AssertionError on input types.
-
-        """
-        self.assertRaises(AssertionError, transform.addition, 0, 0)
-        self.assertRaises(AssertionError, transform.addition, "", "")
-
-    def test_output_equals(self):
-        """Assert output equals specific values.
-
-        """
-        self.assertEqual(transform.addition("", 0), 0)
-        self.assertEqual(transform.addition("ATCG", 1), 5)
-
-
-class TestSubtraction(unittest.TestCase):
-    """Test class for modtransforms.mod.transforms.subtraction function.
-
-    """
-    def shortDescription(self):
-        return None
-    
-    def test_return_type(self):
-        """Assert return type is int.
-
-        """
-        delta = transform.subtraction("", 0)
-        self.assertIsInstance(delta, int)
-
-    def test_assert_raises(self):
-        """Assert AssertionError on input types.
-
-        """
-        self.assertRaises(AssertionError, transform.subtraction, 0, 0)
-        self.assertRaises(AssertionError, transform.subtraction, "", "")
-
-    def test_output_equals(self):
-        """Assert output equals specific values.
-
-        """
-        self.assertEqual(transform.subtraction("", 0), 0)
-        self.assertEqual(transform.subtraction("ATCG", 1), -3)
-        
-
-class TestErrorHandler(unittest.TestCase):
-    """Test class for modtransforms.mod.transforms.error_handler function.
-
-    """
-    def shortDescription(self):
-        return None
-    
-    def test_return_type(self):
-        """Assert return type is int.
-
-        """
-        self.assertRaises(SystemExit, transform.error_handler, "", 0)
-
-    def test_assert_raises(self):
-        """Assert AssertionError on input types.
-
-        """
-        self.assertRaises(AssertionError, transform.error_handler, 0, 0)
-        self.assertRaises(AssertionError, transform.error_handler, "", "")
-        
-
-class TestBuildTransform(unittest.TestCase):
-    """Test class for modtransforms.mod.transform.build_transform function.
-
-    """
+class SetUpClass(unittest.TestCase):
     @classmethod
     def setUpClass(self):
+        self.mod_file = os.path.join(os.path.dirname(__file__),
+                                     "../test_data/CAST_to_BL6_chr19.mod")
+        self.logger = logger.build_logger()
+        self.reverse = False
+        self.transform = transform.build_transform(self.mod_file,
+                                                   self.logger,
+                                                   self.reverse)
+        self.positions, self.deltas = zip(*self.transform.get('chr19'))
+        self.position = 0
         self.mod_file = os.path.join(os.path.dirname(__file__),
                                      "../test_data/CAST_to_BL6_chr19.mod")
         self.logger = logger.build_logger()
@@ -144,6 +43,106 @@ class TestBuildTransform(unittest.TestCase):
     def shortDescription(self):
         return None
     
+
+class TestDoNothing(SetUpClass):
+    """Test class for modtransforms.mod.transforms.do_nothing function.
+
+    """
+    def test_return_type(self):
+        """Assert return type is int.
+
+        """
+        self.assertIsInstance(transform.do_nothing("", 0), int)
+
+    def test_assert_raises(self):
+        """Assert AssertionError on input types.
+
+        """
+        self.assertRaises(AssertionError, transform.do_nothing, 0, 0)
+        self.assertRaises(AssertionError, transform.do_nothing, "", "")
+
+    def test_output_equals(self):
+        """Assert output equals specific values.
+
+        """
+        self.assertEqual(transform.do_nothing("", 0), 0)
+        self.assertEqual(transform.do_nothing("ATCG", 1), 1)
+
+
+class TestAddition(SetUpClass):
+    """Test class for modtransforms.mod.transforms.addition function.
+
+    """
+    def test_return_type(self):
+        """Assert return type is int.
+
+        """
+        delta = transform.addition("", 0)
+        self.assertIsInstance(delta, int)
+
+    def test_assert_raises(self):
+        """Assert AssertionError on input types.
+
+        """
+        self.assertRaises(AssertionError, transform.addition, 0, 0)
+        self.assertRaises(AssertionError, transform.addition, "", "")
+
+    def test_output_equals(self):
+        """Assert output equals specific values.
+
+        """
+        self.assertEqual(transform.addition("", 0), 0)
+        self.assertEqual(transform.addition("ATCG", 1), 5)
+
+
+class TestSubtraction(SetUpClass):
+    """Test class for modtransforms.mod.transforms.subtraction function.
+
+    """
+    def test_return_type(self):
+        """Assert return type is int.
+
+        """
+        delta = transform.subtraction("", 0)
+        self.assertIsInstance(delta, int)
+
+    def test_assert_raises(self):
+        """Assert AssertionError on input types.
+
+        """
+        self.assertRaises(AssertionError, transform.subtraction, 0, 0)
+        self.assertRaises(AssertionError, transform.subtraction, "", "")
+
+    def test_output_equals(self):
+        """Assert output equals specific values.
+
+        """
+        self.assertEqual(transform.subtraction("", 0), 0)
+        self.assertEqual(transform.subtraction("ATCG", 1), -3)
+        
+
+class TestErrorHandler(SetUpClass):
+    """Test class for modtransforms.mod.transforms.error_handler function.
+
+    """
+    def test_return_type(self):
+        """Assert return type is int.
+
+        """
+        self.assertRaises(SystemExit, transform.error_handler, "", 0)
+
+    def test_assert_raises(self):
+        """Assert AssertionError on input types.
+
+        """
+        self.assertRaises(AssertionError, transform.error_handler, 0, 0)
+        self.assertRaises(AssertionError, transform.error_handler, "", "")
+        
+
+class TestBuildTransform(SetUpClass):
+    """Test class for modtransforms.mod.transform.build_transform function.
+
+    """
     def test_assert_raises(self):
         """Assert AssertionError on incorrect input types.
 
@@ -170,17 +169,25 @@ class TestBuildTransform(unittest.TestCase):
         """
         self.assertIsInstance(self.for_trans, dict)
         self.assertIsInstance(self.rev_trans, dict)
-        self.assertIsInstance(self.for_trans.keys()[0], str)
-        self.assertIsInstance(self.rev_trans.keys()[0], str)
-        self.assertIsInstance(self.for_trans.values()[0], list)
-        self.assertIsInstance(self.rev_trans.values()[0], list)
-        self.assertIsInstance(self.for_trans.values()[0][0], tuple)
-        self.assertIsInstance(self.rev_trans.values()[0][0], tuple)
-        self.assertIsInstance(self.for_trans.values()[0][0][0], int)
-        self.assertIsInstance(self.rev_trans.values()[0][0][0], int)
-        self.assertIsInstance(self.for_trans.values()[0][0][1], int)
-        self.assertIsInstance(self.rev_trans.values()[0][0][1], int)
-
+        for key in self.for_trans.keys():
+            self.assertIsInstance(key, str)
+        for key in self.rev_trans.keys():
+            self.assertIsInstance(key, str)
+        for value in self.for_trans.values():
+            self.assertIsInstance(value, list)
+        for value in self.rev_trans.values():
+            self.assertIsInstance(value, list)
+        for value in self.for_trans.values():
+            for tup in value:
+                self.assertIsInstance(tup, tuple)
+                self.assertIsInstance(tup[0], int)
+                self.assertIsInstance(tup[1], int)
+        for value in self.rev_trans.values():
+            for tup in value:
+                self.assertIsInstance(tup, tuple)
+                self.assertIsInstance(tup[0], int)
+                self.assertIsInstance(tup[1], int)
+                
     def test_build_transform_validity(self):
         """Assert data equals known values.
 
@@ -196,31 +203,10 @@ class TestBuildTransform(unittest.TestCase):
                              self.rev_data.get('chr19')[rand])
 
 
-class TestFindDelta(unittest.TestCase):
+class TestFindDelta(SetUpClass):
     """Test class for modtransforms.mod.transform.find_delta.
 
     """
-    @classmethod
-    def setUpClass(self):
-        self.positions = ()
-        self.deltas = ()
-        self.position = 0
-        self.mod_file = os.path.join(os.path.dirname(__file__),
-                                     "../test_data/CAST_to_BL6_chr19.mod")
-        self.logger = logger.build_logger()
-        self.reverse = False
-        self.transform = transform.build_transform(self.mod_file,
-                                                   self.logger,
-                                                   self.reverse)
-        self.positions, self.deltas = zip(*self.transform.get('chr19'))
-    
-    @classmethod
-    def TearDownClass(self):
-        pass
-    
-    def shortDescription(self):
-        return None
-
     def test_assert_raises(self):
         """Assert AssertionError on incorrect input types.
 
@@ -260,3 +246,4 @@ class TestFindDelta(unittest.TestCase):
         self.assertEqual(
             transform.find_delta(self.positions, self.deltas, 32624885),
             -15328)
+
