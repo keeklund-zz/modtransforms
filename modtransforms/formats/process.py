@@ -1,86 +1,110 @@
 from re import match
+from types import ModuleType
 from pysam import AlignmentFile
+from modtransforms.formats.bamsam import update_header
 from modtransforms.mod.transform import build_transform, find_delta
 
-def update_header(header, chrom_sizes_file):
+# will likely move to new location
+def update_cigar(mod_index, old_cigar):
+    new_cigar = []
+    return old_cigar
+#     for mi in mod_index:
+#         cigarindex = 0
+#         for ci,c in enumerate(old_cigar):
+# #                        if len(old_cigar) > 1:
+#             if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
+#                 if mi[1] > 0 and mi[0] < c[1]:
+#                     new_cigar.append((c[0], mi[0]))
+#                     new_cigar.append((3, mi[1]))
+#                     new_cigar.append((c[0], c[1] - mi[0]))
+#                 else:
+#                     new_cigar.append((c[0], c[1] + mi[1]))
+#             else:
+#                 cigarindex = cigarindex + c[1]
+#                 new_cigar.append(c)
+# #                        else:
+# #                            new_cigar = old_cigar
+#     return new_cigar
 
-    return header
+# will likely move to new location
+def build_modification_index(positions, deltas, line, start_delta):
+    """Return a list of (read index, change relative to read start location).
+
+    """
+    hwm = start_delta
+    mod_index = []
+    for i,p in enumerate(line.get_reference_positions()):
+        p_delta = find_delta(positions, deltas, p)
+        if hwm != p_delta:
+            mod_index.append((i, hwm-p_delta))
+            hwm = p_delta
+    return mod_index
+
+# will likely move to new location
+def get_positions_and_deltas(chrom_mods, curr_chrom, logger):
+    """Return tuple containing positional and delta information.
+
+    The first tuple contains positional information.  Every location at which 
+    there is a change between species.  The delta tuple is a cumulative measure
+    of how much change has occurred up to respective (same index) position.
+
+    """
+    assert isinstance(chrom_mods, dict), "chrom_mods must be type dict"
+    assert isinstance(curr_chrom, str), "curr_chrom must be type str"
+    assert isinstance(logger, ModuleType), "logger must be ModuleType"
+    try:
+        positions, deltas = zip(*chrom_mods.get(curr_chrom))
+        logger.info("CONTIG: '%s'" % curr_chrom)
+    except TypeError:
+        logger.warn(
+            "CONTIG: '%s' is not in MOD File. Skipping." % \
+            curr_chrom)
+        positions, deltas = (), ()
+    return positions, deltas
 
 def bam(args, logger):
     if not args.chrom_sizes:
         exit("Chrom sizes required for bam conversion")
         
     chrom_mods = build_transform(args.mod, logger, args.reverse)
-    curr_chrom = ""
-
     input_ = AlignmentFile(args.input, 'rb')
 
-    header = input_.header.copy()
-    with open(args.chrom_sizes, "r") as cs_file:
-        chrom_sizes = dict(line.split() for line in cs_file)
-    for chrom in header['SQ']:
-        chrom['LN'] = int(chrom_sizes[chrom['SN']])
-    
+    header = update_header(input_.header.copy(), args.chrom_sizes)
     output = AlignmentFile(args.output, 'wb', header=header)
 
+    curr_chrom = ""
     for line in input_:
+
         if input_.references[line.reference_id] != curr_chrom:
             curr_chrom = input_.references[line.reference_id]
-            try:
-                positions, deltas = zip(*chrom_mods.get(curr_chrom))
-                logger.info("CONTIG: '%s'" % curr_chrom)
-            except TypeError:
-                logger.warn(
-                    "CONTIG: '%s' is not in MOD File. Skipping." % \
-                    curr_chrom)
-                positions, deltas = [], []
-                continue
+            positions, deltas = get_positions_and_deltas(chrom_mods,
+                                                         curr_chrom,
+                                                         logger)
+
         try:
             start_delta = find_delta(positions,
                                      deltas,
                                      int(line.reference_start))
-            
-            end_delta = find_delta(positions,
-                                   deltas,
-                                   int(line.reference_end))
-            if start_delta != end_delta:
-                hwm = start_delta
-                mod_index = []
-                for i,p in enumerate(line.get_reference_positions()):
-                    p_delta = find_delta(positions, deltas, p)
-                    if hwm != p_delta:
-                        mod_index.append((i, hwm-p_delta))
-                        hwm = p_delta
-                new_cigar = []
-                old_cigar = line.cigar
+            # end_delta = find_delta(positions,
+            #                        deltas,
+            #                        int(line.reference_end))
+            mod_index = build_modification_index(positions,
+                                                 deltas,
+                                                 line,
+                                                 start_delta)
+            new_cigar = update_cigar(mod_index, line.cigar)
 
-                for mi in mod_index:
-                    cigarindex = 0
-                    for ci,c in enumerate(old_cigar):
-#                        if len(old_cigar) > 1:
-                        if c[1] + mi[1] > 0 and (mi[0] <= cigarindex or mi[0] <= c[1]):
-                            if mi[1] > 0 and mi[0] < c[1]:
-                                new_cigar.append((c[0], mi[0]))
-                                new_cigar.append((3, mi[1]))
-                                new_cigar.append((c[0], c[1] - mi[0]))
-                                print mi, c, new_cigar
-                            else:
-                                new_cigar.append((c[0], c[1] + mi[1]))
-                        else:
-                            cigarindex = cigarindex + c[1]
-                            new_cigar.append(c)
-#                        else:
-#                            new_cigar = old_cigar
-
-                if len(line.cigar) < len(new_cigar):
-                    line.cigar = new_cigar[-1*len(line.cigar):]
-                else:
-                    line.cigar = new_cigar
+            if len(line.cigar) < len(new_cigar):
+                line.cigar = new_cigar[-1*len(line.cigar):]
+            else:
+                line.cigar = new_cigar
             line.reference_start = int(line.reference_start) + start_delta
             output.write(line)
         except IndexError:
+            print "IndexError: ", line
             pass
         except TypeError:
+            print "TypeError:", line
             pass
 
 def gtf(args, logger):
@@ -101,7 +125,7 @@ def gtf(args, logger):
                     logger.warn(
                         "CONTIG: '%s' is not in MOD File. Skipping." % \
                         curr_chrom)
-                    positions, deltas = [], []
+                    positions, deltas = (), ()
                     continue
             try:
                 start_delta = find_delta(positions, 
@@ -137,7 +161,7 @@ def smrna_12_bed(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], []
+                        positions, deltas = (), ()
                         continue
                 try:
                     c_start_delta = find_delta(positions, 
@@ -187,7 +211,7 @@ def smrna_bed(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], []
+                        positions, deltas = (), ()
                         continue
                 try:
                     start_delta = find_delta(positions, 
@@ -222,7 +246,7 @@ def smrna_gff3(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], []
+                        positions, deltas = (), ()
                         continue
                 try:
                     start_delta = find_delta(positions, 
@@ -260,7 +284,7 @@ def smrna_lib_fa(args, logger):
                         logger.warn(
                             "CONTIG: '%s' is not in MOD File. Skipping." % \
                             curr_chrom)
-                        positions, deltas = [], []
+                        positions, deltas = (), ()
                         continue
                 try:
                     start_delta = find_delta(positions, 
@@ -297,7 +321,7 @@ def smrna_table_txt(args, logger):
                     logger.warn(
                         "CONTIG: '%s' is not in MOD File. Skipping." % \
                         curr_chrom)
-                    positions, deltas = [], []
+                    positions, deltas = (), ()
                     continue
             try:
                 start_delta = find_delta(positions, 
@@ -332,7 +356,7 @@ def smrna_txt(args, logger):
                     logger.warn(
                         "CONTIG: '%s' is not in MOD File. Skipping." % \
                         curr_chrom)
-                    positions, deltas = [], []
+                    positions, deltas = (), ()
                     continue
             try:
                 start_delta = find_delta(positions, 
