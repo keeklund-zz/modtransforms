@@ -92,12 +92,12 @@ def bam(args, logger):
                                                  deltas,
                                                  line,
                                                  start_delta)
-            new_cigar = update_cigar(mod_index, line.cigar)
+            # new_cigar = update_cigar(mod_index, line.cigar)
 
-            if len(line.cigar) < len(new_cigar):
-                line.cigar = new_cigar[-1*len(line.cigar):]
-            else:
-                line.cigar = new_cigar
+            # if len(line.cigar) < len(new_cigar):
+            #     line.cigar = new_cigar[-1*len(line.cigar):]
+            # else:
+            #     line.cigar = new_cigar
             line.reference_start = int(line.reference_start) + start_delta
             output.write(line)
         except IndexError:

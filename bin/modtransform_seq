@@ -9,12 +9,12 @@ and noted in docstring where applicable.
 from os import path
 from argparse import ArgumentParser
 from modtransforms.mod.transform import build_transform
-from modtransform.sequencing.information import seq_types
+from modtransforms.sequencing.information import seq_types
 from modtransforms.utils.logger import build_logger
 
 def main(args):
     logger = build_logger()
-    handler = file_types.get(args.type)
+    handler = seq_types.get(args.seq)
     handler(args, logger)
 
 if __name__ == "__main__":
@@ -30,6 +30,7 @@ if __name__ == "__main__":
     parser.add_argument('--seq',
                         required=True,
                         choices=seq_types.keys(),
+                        type=str,
                         help='Enter one allowed sequencing type')
     parser.add_argument('--input',
                         required=True,
