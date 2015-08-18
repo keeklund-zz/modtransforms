@@ -60,6 +60,6 @@ def atac(args, logger):
                                    deltas,
                                    int(line.reference_end))
             mapped_end = int(line.reference_end) + end_delta
-            line.reference_start = mapped_end - line.reference_length 
+            line.reference_start = mapped_end - len(line.seq) # line.reference_length 
         output.write(line)
             
