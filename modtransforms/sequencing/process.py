@@ -49,17 +49,25 @@ def atac(args, logger):
             positions, deltas = get_positions_and_deltas(chrom_mods,
                                                          curr_chrom,
                                                          logger)
-
-        if not line.is_reverse:
-            start_delta = find_delta(positions,
-                                     deltas,
-                                     int(line.reference_start))
-            line.reference_start = int(line.reference_start) + start_delta
-        else:
-            end_delta = find_delta(positions,
-                                   deltas,
-                                   int(line.reference_end))
-            mapped_end = int(line.reference_end) + end_delta
-            line.reference_start = mapped_end - len(line.seq) # line.reference_length 
-        output.write(line)
+        # if line.is_reverse and (line.reference_length != len(line.seq)):
+        #     print line
+        #     print line.reference_length
+        #     print line.cigar
+        #     print len(line.seq)
+        #     print len(line.get_reference_positions())
+        try:
+            if not line.is_reverse:
+                start_delta = find_delta(positions,
+                                         deltas,
+                                         int(line.reference_start))
+                line.reference_start = int(line.reference_start) + start_delta
+            else:
+                end_delta = find_delta(positions,
+                                       deltas,
+                                       int(line.reference_end))
+                mapped_end = int(line.reference_end) + end_delta
+                line.reference_start = mapped_end - len(line.seq) # line.reference_length 
+            output.write(line)
+        except IndexError:
+            pass
             
