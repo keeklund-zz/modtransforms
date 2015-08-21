@@ -4,7 +4,6 @@
 """
 from os import path
 from argparse import ArgumentParser
-from modtransforms.mod.transform import build_transform
 from modtransforms.formats.information import file_types
 from modtransforms.utils.logger import build_logger
 
@@ -25,7 +24,7 @@ if __name__ == "__main__":
                         choices=file_types.keys(),
                         help='Enter one allowed input type')
     parser.add_argument('--reverse',
-                        default=False,
+                        default=True,
                         type=bool,
                         help='Boolean: reverse MOD mapping')
     parser.add_argument('--input',

@@ -8,7 +8,6 @@ and noted in docstring where applicable.
 """
 from os import path
 from argparse import ArgumentParser
-from modtransforms.mod.transform import build_transform
 from modtransforms.sequencing.information import seq_types
 from modtransforms.utils.logger import build_logger
 
@@ -24,7 +23,7 @@ if __name__ == "__main__":
                         required=True,
                         help='Required MOD File')
     parser.add_argument('--reverse',
-                        default=False,
+                        default=True,
                         type=bool,
                         help='Boolean: reverse MOD mapping')
     parser.add_argument('--seq',
