@@ -57,7 +57,7 @@ def get_positions_and_deltas(chrom_mods, curr_chrom, logger):
         logger.info("CONTIG: '%s'" % curr_chrom)
     except TypeError:
         logger.warn(
-            "CONTIG: '%s' is not in MOD File. Skipping." % \
+            "CONTIG: '%s' is not in MOD File." % \
             curr_chrom)
         positions, deltas = (), ()
     return positions, deltas
@@ -123,7 +123,7 @@ def gtf(args, logger):
                     logger.info("CONTIG: '%s'" % curr_chrom)
                 except TypeError:
                     logger.warn(
-                        "CONTIG: '%s' is not in MOD File. Skipping." % \
+                        "CONTIG: '%s' is not in MOD File." % \
                         curr_chrom)
                     positions, deltas = (), ()
                     continue
@@ -159,7 +159,7 @@ def smrna_12_bed(args, logger):
                         logger.info("CONTIG: '%s'" % curr_chrom)
                     except TypeError:
                         logger.warn(
-                            "CONTIG: '%s' is not in MOD File. Skipping." % \
+                            "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
                         continue
@@ -209,7 +209,7 @@ def smrna_bed(args, logger):
                         logger.info("CONTIG: '%s'" % curr_chrom)
                     except TypeError:
                         logger.warn(
-                            "CONTIG: '%s' is not in MOD File. Skipping." % \
+                            "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
                         continue
@@ -244,7 +244,7 @@ def smrna_gff3(args, logger):
                         logger.info("CONTIG: '%s'" % curr_chrom)
                     except TypeError:
                         logger.warn(
-                            "CONTIG: '%s' is not in MOD File. Skipping." % \
+                            "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
                         continue
@@ -282,7 +282,7 @@ def smrna_lib_fa(args, logger):
                         logger.info("CONTIG: '%s'" % curr_chrom)
                     except TypeError:
                         logger.warn(
-                            "CONTIG: '%s' is not in MOD File. Skipping." % \
+                            "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
                         continue
@@ -319,7 +319,7 @@ def smrna_table_txt(args, logger):
                     logger.info("CONTIG: '%s'" % curr_chrom)
                 except TypeError:
                     logger.warn(
-                        "CONTIG: '%s' is not in MOD File. Skipping." % \
+                        "CONTIG: '%s' is not in MOD File." % \
                         curr_chrom)
                     positions, deltas = (), ()
                     continue
@@ -354,7 +354,7 @@ def smrna_txt(args, logger):
                     logger.info("CONTIG: '%s'" % curr_chrom)
                 except TypeError:
                     logger.warn(
-                        "CONTIG: '%s' is not in MOD File. Skipping." % \
+                        "CONTIG: '%s' is not in MOD File." % \
                         curr_chrom)
                     positions, deltas = (), ()
                     continue
@@ -372,3 +372,39 @@ def smrna_txt(args, logger):
             except IndexError:
                 pass
 
+def npf(args, logger):
+
+    out = open(args.output, 'w')
+    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    keys = 'chrom chromStart chromEnd name score strand a b c d'
+    curr_chrom = ""
+    with open(args.input, 'r') as input_:
+        for line in input_:
+            if not line.startswith('chrom'):
+                gene = line.rstrip()
+                data = {k:g for k,g in zip(keys.split(), gene.split('\t'))}
+                if data.get('chrom') != curr_chrom:
+                    curr_chrom = data.get('chrom')
+                    try:
+                        positions, deltas = zip(*chrom_mods.get(curr_chrom))
+                        logger.info("CONTIG: '%s'" % curr_chrom)
+                    except TypeError:
+                        logger.warn(
+                            "CONTIG: '%s' is not in MOD File." % \
+                            curr_chrom)
+                        positions, deltas = (), ()
+                        continue
+                try:
+                    start_delta = find_delta(positions, 
+                                             deltas, 
+                                             int(data.get('chromStart')))
+                    end_delta = find_delta(positions, 
+                                           deltas,
+                                           int(data.get('chromEnd')))
+                    data['chromStart'] = int(data.get('chromStart')) + start_delta
+                    data['chromEnd'] = int(data.get('chromEnd')) + end_delta
+                    out.write('%s\n' % \
+                              '\t'.join([str(data.get(k)) for k in keys.split()]))
+                except IndexError:
+                    pass
+            

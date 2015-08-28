@@ -78,9 +78,12 @@ def find_delta(positions, deltas, position):
     assert isinstance(deltas, tuple), "deltas must be type tuple"
     assert isinstance(position, int), "position must be type int"
     idx = bisect_left(positions, position)
-    if positions[idx] <= position:
-        delta = deltas[idx]
-    else:
-        delta = deltas[idx - 1]
+    try:
+        if positions[idx] <= position:
+            delta = deltas[idx]
+        else:
+            delta = deltas[idx - 1]
+    except IndexError:
+        delta = 0
     return delta
                         

@@ -20,7 +20,7 @@ def get_positions_and_deltas(chrom_mods, curr_chrom, logger):
         logger.info("CONTIG: '%s'" % curr_chrom)
     except TypeError:
         logger.warn(
-            "CONTIG: '%s' is not in MOD File. Skipping." % \
+            "CONTIG: '%s' is not in MOD File." % \
             curr_chrom)
         positions, deltas = (), ()
     return positions, deltas
@@ -55,19 +55,19 @@ def atac(args, logger):
         #     print line.cigar
         #     print len(line.seq)
         #     print len(line.get_reference_positions())
-        try:
-            if not line.is_reverse:
-                start_delta = find_delta(positions,
-                                         deltas,
-                                         int(line.reference_start))
-                line.reference_start = int(line.reference_start) + start_delta
-            else:
-                end_delta = find_delta(positions,
-                                       deltas,
-                                       int(line.reference_end))
-                mapped_end = int(line.reference_end) + end_delta
-                line.reference_start = mapped_end - len(line.seq) # line.reference_length 
-            output.write(line)
-        except IndexError:
-            pass
+#        try:
+        if not line.is_reverse:
+            start_delta = find_delta(positions,
+                                     deltas,
+                                     int(line.reference_start))
+            line.reference_start = int(line.reference_start) + start_delta
+        else:
+            end_delta = find_delta(positions,
+                                   deltas,
+                                   int(line.reference_end))
+            mapped_end = int(line.reference_end) + end_delta
+            line.reference_start = mapped_end - len(line.seq) # line.reference_length 
+        output.write(line)
+#        except IndexError:
+#            pass
             
