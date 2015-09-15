@@ -407,4 +407,3 @@ def npf(args, logger):
                               '\t'.join([str(data.get(k)) for k in keys.split()]))
                 except IndexError:
                     pass
-            
