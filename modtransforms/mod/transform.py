@@ -39,10 +39,10 @@ def build_transform(mod_file, logger, reverse):
     mod = gen_mod(mod_file)
     transform = {}
 
-    # if reverse:
-    #     adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
-    # else:
-    adjustment_direction = {'s': do_nothing, 'd': subtraction, 'i': addition}
+    if reverse:
+        adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
+    else:
+        adjustment_direction = {'s': do_nothing, 'd': subtraction, 'i': addition}
     
     chrom = ''
     while mod:
@@ -59,12 +59,12 @@ def build_transform(mod_file, logger, reverse):
 
         try:
             if reverse:
-                transform[chrom].append((int(data[2]) + delta, (-1 * delta)))
+                transform[chrom].append((int(data[2]) + (-1 * delta), delta))
             else:
                 transform[chrom].append((int(data[2]), delta))
         except KeyError:
             if reverse:
-                transform[chrom] = [(int(data[2]) + delta, (-1 * delta)),]
+                transform[chrom] = [(int(data[2]) + (-1 * delta), delta),]
             else:
                 transform[chrom] = [(int(data[2]), delta),]
     logger.info("Chromosome MODification transform built")
