@@ -85,5 +85,7 @@ def find_delta(positions, deltas, position):
             delta = deltas[idx - 1]
     except IndexError:
         delta = 0
+    if idx == 0:
+        delta = 0
     return delta
                         
