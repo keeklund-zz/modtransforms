@@ -23,26 +23,20 @@ def error_handler(data, delta):
     assert isinstance(delta, int), "Delta must be type int."
     exit("Not controlling all options")
 
-def build_transform(mod_file, logger, reverse):
+def build_transform(mod_file, logger):
     """Return nested dictionary: chr: pos1: pos2.
     
     :mod_file must be type string, and file exist
 
     :logger is module class 
 
-    :reverse will map transform in opposite direction, must be type boolean
-
     """
     assert exists(mod_file), "mod file doesn't exist"
     assert isinstance(logger, ModuleType), "incorrect logger type"
-    assert isinstance(reverse, bool), "reverse type error - boolean required"
     mod = gen_mod(mod_file)
     transform = {}
 
-    if reverse:
-        adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
-    else:
-        adjustment_direction = {'s': do_nothing, 'd': subtraction, 'i': addition}
+    adjustment_direction = {'s': do_nothing, 'd': subtraction, 'i': addition}
     
     chrom = ''
     while mod:
@@ -58,15 +52,9 @@ def build_transform(mod_file, logger, reverse):
         delta = handler(data[3], delta)
 
         try:
-            if reverse:
-                transform[chrom].append((int(data[2]) + (-1 * delta), delta))
-            else:
-                transform[chrom].append((int(data[2]), delta))
+            transform[chrom].append((int(data[2]), delta))
         except KeyError:
-            if reverse:
-                transform[chrom] = [(int(data[2]) + (-1 * delta), delta),]
-            else:
-                transform[chrom] = [(int(data[2]), delta),]
+            transform[chrom] = [(int(data[2]), delta),]
     logger.info("Chromosome MODification transform built")
     return transform
 
@@ -84,7 +72,7 @@ def find_delta(positions, deltas, position):
         else:
             delta = deltas[idx - 1]
     except IndexError:
-        delta = 0
+        delta = deltas[-1]
     if idx == 0:
         delta = 0
     return delta

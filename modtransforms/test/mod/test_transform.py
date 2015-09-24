@@ -11,33 +11,19 @@ class SetUpClass(unittest.TestCase):
         self.mod_file = os.path.join(os.path.dirname(__file__),
                                      "../test_data/CAST_to_BL6_chr19.mod")
         self.logger = logger.build_logger()
-        self.reverse = False
-        self.transform = transform.build_transform(self.mod_file,
-                                                   self.logger,
-                                                   self.reverse)
+        self.transform = transform.build_transform(self.mod_file, self.logger)
         self.positions, self.deltas = zip(*self.transform.get('chr19'))
         self.position = 0
         self.mod_file = os.path.join(os.path.dirname(__file__),
                                      "../test_data/CAST_to_BL6_chr19.mod")
         self.logger = logger.build_logger()
-        self.reverseF = False
-        self.reverseT = True
-        self.for_trans = transform.build_transform(self.mod_file,
-                                                   self.logger,
-                                                   self.reverseF)
-        self.rev_trans = transform.build_transform(self.mod_file,
-                                                   self.logger,
-                                                   self.reverseT)
+        self.for_trans = transform.build_transform(self.mod_file, self.logger)
         self.for_file = os.path.join(os.path.dirname(__file__),
                                      "../test_data/CAST_to_BL6_chr19.dat")
-        self.rev_file = os.path.join(os.path.dirname(__file__),
-                                     "../test_data/CAST_to_BL6_chr19_rev.dat")
         self.for_data = pickle.load(open(self.for_file, 'r'))
-        self.rev_data = pickle.load(open(self.rev_file, 'r'))
         
     @classmethod
     def tearDownClass(self):
-        self.rev_trans = None
         self.for_trans = None
         
     def shortDescription(self):
@@ -150,17 +136,10 @@ class TestBuildTransform(SetUpClass):
         self.assertRaises(AssertionError,
                           transform.build_transform,
                           "/tmp/clearlyfakefile.mod",
-                          self.logger,
-                          self.reverseF)
+                          self.logger)
         self.assertRaises(AssertionError,
                           transform.build_transform,
                           self.mod_file,
-                          "",
-                          self.reverseF)
-        self.assertRaises(AssertionError,
-                          transform.build_transform,
-                          self.mod_file,
-                          self.logger,
                           "")
 
     def test_build_transform_return_types(self):
@@ -168,21 +147,11 @@ class TestBuildTransform(SetUpClass):
 
         """
         self.assertIsInstance(self.for_trans, dict)
-        self.assertIsInstance(self.rev_trans, dict)
         for key in self.for_trans.keys():
             self.assertIsInstance(key, str)
-        for key in self.rev_trans.keys():
-            self.assertIsInstance(key, str)
         for value in self.for_trans.values():
             self.assertIsInstance(value, list)
-        for value in self.rev_trans.values():
-            self.assertIsInstance(value, list)
         for value in self.for_trans.values():
-            for tup in value:
-                self.assertIsInstance(tup, tuple)
-                self.assertIsInstance(tup[0], int)
-                self.assertIsInstance(tup[1], int)
-        for value in self.rev_trans.values():
             for tup in value:
                 self.assertIsInstance(tup, tuple)
                 self.assertIsInstance(tup[0], int)
@@ -193,14 +162,11 @@ class TestBuildTransform(SetUpClass):
 
         """
         self.assertEqual(self.for_trans.keys(), ['chr19',])
-        self.assertEqual(self.rev_trans.keys(), ['chr19',])
 
         # spot check 100 values - whole list takes too long
         for rand in random.sample(range(len(self.for_trans.get('chr19'))), 100):
             self.assertEqual(self.for_trans.get('chr19')[rand],
                              self.for_data.get('chr19')[rand])
-            self.assertEqual(self.rev_trans.get('chr19')[rand],
-                             self.rev_data.get('chr19')[rand])
 
 
 class TestFindDelta(SetUpClass):

@@ -22,10 +22,6 @@ if __name__ == "__main__":
     parser.add_argument('--mod',
                         required=True,
                         help='Required MOD File')
-    parser.add_argument('--reverse',
-                        default=True,
-                        type=bool,
-                        help='Boolean: reverse MOD mapping')
     parser.add_argument('--seq',
                         required=True,
                         choices=seq_types.keys(),

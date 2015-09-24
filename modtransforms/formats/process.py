@@ -66,7 +66,7 @@ def bam(args, logger):
     if not args.chrom_sizes:
         exit("Chrom sizes required for bam conversion")
         
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     input_ = AlignmentFile(args.input, 'rb')
 
     header = update_header(input_.header.copy(), args.chrom_sizes)
@@ -109,7 +109,7 @@ def bam(args, logger):
 
 def gtf(args, logger):
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = "seqname source feature start end score strand frame attribute"
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -144,7 +144,7 @@ def gtf(args, logger):
 def smrna_12_bed(args, logger):
 
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = 'chrom chromStart chromEnd name score strand thickStart thickEnd itemRgb blockCount blockSizes blockStart'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -194,7 +194,7 @@ def smrna_12_bed(args, logger):
 def smrna_bed(args, logger):
 
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = 'chrom chromStart chromEnd name score strand'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -229,7 +229,7 @@ def smrna_bed(args, logger):
             
 def smrna_gff3(args, logger):
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = 'chrom source type start end score strand phase attributes'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -265,7 +265,7 @@ def smrna_gff3(args, logger):
 def smrna_lib_fa(args, logger):
 
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = 'chrom start end strand'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -305,7 +305,7 @@ def smrna_lib_fa(args, logger):
 def smrna_table_txt(args, logger):
     
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = 'name chrom start end strand mature hairpin'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -340,7 +340,7 @@ def smrna_table_txt(args, logger):
 def smrna_txt(args, logger):
 
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = 'name num_trna trna_begin trna_end isotype anticodon up_region down_region intron_begin intron_end cove hmm 2_str scanner'
     curr_chrom = ""
     with open(args.input, 'r') as input_:
@@ -375,7 +375,7 @@ def smrna_txt(args, logger):
 def npf(args, logger):
 
     out = open(args.output, 'w')
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     keys = 'chrom chromStart chromEnd name score strand a b c d'
     curr_chrom = ""
     with open(args.input, 'r') as input_:

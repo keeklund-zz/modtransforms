@@ -23,10 +23,6 @@ if __name__ == "__main__":
                         required=True, 
                         choices=file_types.keys(),
                         help='Enter one allowed input type')
-    parser.add_argument('--reverse',
-                        default=True,
-                        type=bool,
-                        help='Boolean: reverse MOD mapping')
     parser.add_argument('--input',
                         required=True,
                         help='INPUT File')

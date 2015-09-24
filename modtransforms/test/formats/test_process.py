@@ -18,7 +18,7 @@ class SetUpClass(unittest.TestCase):
             os.path.dirname(__file__), "../test_data/CAST_to_BL6_chr19.mod")
         self.logger = build_logger()
         self.curr_chrom = 'chr19'
-        self.chrom_mods = build_transform(self.mod_file, self.logger, False)
+        self.chrom_mods = build_transform(self.mod_file, self.logger)
         self.positions, self.deltas = get_positions_and_deltas(self.chrom_mods,
                                                                self.curr_chrom,
                                                                self.logger)

@@ -35,7 +35,7 @@ def atac(args, logger):
     if not args.chrom_sizes:
         exit("Chrom sizes required for bam conversion")
 
-    chrom_mods = build_transform(args.mod, logger, args.reverse)
+    chrom_mods = build_transform(args.mod, logger)
     input_ = AlignmentFile(args.input, 'rb')
 
     header = update_header(input_.header.copy(), args.chrom_sizes)
