@@ -406,4 +406,5 @@ def npf(args, logger):
                     out.write('%s\n' % \
                               '\t'.join([str(data.get(k)) for k in keys.split()]))
                 except IndexError:
-                    pass
+                    out.write('%s\n' % \
+                              '\t'.join([str(data.get(k)) for k in keys.split()]))

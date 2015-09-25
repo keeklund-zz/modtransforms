@@ -72,7 +72,10 @@ def find_delta(positions, deltas, position):
         else:
             delta = deltas[idx - 1]
     except IndexError:
-        delta = deltas[-1]
+        if len(deltas) > 1:
+            delta = deltas[-1]
+        else:
+            delta = 0
     if idx == 0:
         delta = 0
     return delta
