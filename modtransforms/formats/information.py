@@ -1,6 +1,6 @@
 from modtransforms.formats.process import bam, gtf, npf, smrna_12_bed, smrna_bed
 from modtransforms.formats.process import smrna_gff3, smrna_lib_fa
-from modtransforms.formats.process import smrna_table_txt, smrna_txt
+from modtransforms.formats.process import smrna_table_txt, smrna_txt, wig
 
 file_types = {
     'bam': bam,
@@ -12,5 +12,6 @@ file_types = {
     'smrna_lib_fa': smrna_lib_fa,
     'smrna_table_txt': smrna_table_txt,
     'smrna_txt': smrna_txt,
+    'wig': wig,
 }
 

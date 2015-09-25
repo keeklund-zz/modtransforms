@@ -1,4 +1,4 @@
-from re import match
+from re import match, compile
 from types import ModuleType
 from pysam import AlignmentFile
 from modtransforms.formats.bamsam import update_header
@@ -408,3 +408,39 @@ def npf(args, logger):
                 except IndexError:
                     out.write('%s\n' % \
                               '\t'.join([str(data.get(k)) for k in keys.split()]))
+
+def wig(args, logger):
+
+    out = open(args.output, 'w')
+    chrom_mods = build_transform(args.mod, logger)
+    keys = 'chromStart dataValue'
+    curr_chrom = ""
+    pattern = compile('=(\S+)\s')
+    with open(args.input, 'r') as input_:
+        for line in input_:
+            if not 'chrom' in line:
+                location = line.rstrip()
+                data = {k:g for k,g in zip(keys.split(), location.split())}
+                try:
+                    start_delta = find_delta(positions, 
+                                             deltas, 
+                                             int(data.get('chromStart')))
+                    data['chromStart'] = int(data.get('chromStart')) + start_delta
+                    out.write('%s\n' % \
+                              '\t'.join([str(data.get(k)) for k in keys.split()]))
+                except IndexError:
+                    out.write('%s\n' % \
+                              '\t'.join([str(data.get(k)) for k in keys.split()]))
+            else:
+                search = pattern.search(line)
+                if search.groups()[0] != curr_chrom:
+                    curr_chrom = search.groups()[0]
+                    try:
+                        positions, deltas = zip(*chrom_mods.get(curr_chrom))
+                        logger.info("CONTIG: '%s'" % curr_chrom)
+                    except TypeError:
+                        logger.warn(
+                            "CONTIG: '%s' is not in MOD File." % \
+                            curr_chrom)
+                        positions, deltas = (), ()
+                        continue
