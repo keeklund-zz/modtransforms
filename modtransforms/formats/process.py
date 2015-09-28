@@ -1,4 +1,4 @@
-from re import match, compile
+from re import match, compile, sub
 from types import ModuleType
 from pysam import AlignmentFile
 from modtransforms.formats.bamsam import update_header
@@ -413,28 +413,30 @@ def wig(args, logger):
 
     out = open(args.output, 'w')
     chrom_mods = build_transform(args.mod, logger)
-    keys = 'chromStart dataValue'
+    keys = 'dataValue'
     curr_chrom = ""
-    pattern = compile('=(\S+)\s')
+    chrom_pattern = compile('chrom=(\S+)\s')
+    start_pattern = compile('start=(\d+)')
     with open(args.input, 'r') as input_:
         for line in input_:
             if not 'chrom' in line:
-                location = line.rstrip()
-                data = {k:g for k,g in zip(keys.split(), location.split())}
-                try:
-                    start_delta = find_delta(positions, 
-                                             deltas, 
-                                             int(data.get('chromStart')))
-                    data['chromStart'] = int(data.get('chromStart')) + start_delta
-                    out.write('%s\n' % \
-                              '\t'.join([str(data.get(k)) for k in keys.split()]))
-                except IndexError:
-                    out.write('%s\n' % \
-                              '\t'.join([str(data.get(k)) for k in keys.split()]))
+                out.write(line)
+                # location = line.rstrip()
+                # data = {k:g for k,g in zip(keys.split(), location.split())}
+                # try:
+                #     start_delta = find_delta(positions, 
+                #                              deltas, 
+                #                              int(data.get('chromStart')))
+                #     data['chromStart'] = int(data.get('chromStart')) + start_delta
+                #     out.write('%s\n' % \
+                #               '\t'.join([str(data.get(k)) for k in keys.split()]))
+                # except IndexError:
+                #     out.write('%s\n' % \
+                #               '\t'.join([str(data.get(k)) for k in keys.split()]))
             else:
-                search = pattern.search(line)
-                if search.groups()[0] != curr_chrom:
-                    curr_chrom = search.groups()[0]
+                chrom_search = chrom_pattern.search(line)
+                if chrom_search.groups()[0] != curr_chrom:
+                    curr_chrom = chrom_search.groups()[0]
                     try:
                         positions, deltas = zip(*chrom_mods.get(curr_chrom))
                         logger.info("CONTIG: '%s'" % curr_chrom)
@@ -443,4 +445,10 @@ def wig(args, logger):
                             "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
-                        continue
+                start_location = int(start_pattern.search(line).groups()[0])
+                start_delta = find_delta(positions, deltas, start_location)
+                new_line = sub('start=%d' % start_location,
+                               'start=%d' % (start_location + start_delta),
+                               line)
+                out.write(new_line)
+                
