@@ -452,3 +452,18 @@ def wig(args, logger):
                                line)
                 out.write(new_line)
                 
+
+# def wig_pseudo():
+#     out = open(args.output, 'w')
+#     chrom_mods = build_transform(args.mod, logger)
+#     keys = 'dataValue'
+#     curr_chrom = ""
+#     chrom_pattern = compile('chrom=(\S+)\s')
+#     start_pattern = compile('start=(\d+)')
+#     with open(args.input, 'r') as input_:
+#         for line in input_:
+#             if 'chrom' in line:
+#                 if already data:
+#                     compare len of data and header differences
+#                     adjust if necessary 
+#                 set header 
