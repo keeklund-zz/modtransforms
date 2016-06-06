@@ -36,7 +36,7 @@ def build_transform(mod_file, logger):
     mod = gen_mod(mod_file)
     transform = {}
 
-    adjustment_direction = {'s': do_nothing, 'd': subtraction, 'i': addition}
+    adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
     
     chrom = ''
     while mod:
