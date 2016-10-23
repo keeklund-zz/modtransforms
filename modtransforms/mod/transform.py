@@ -50,7 +50,8 @@ def build_transform(mod_file, logger):
         dcount = 0
         while (data[0] == 'd'):
             dcount = dcount + 1
-            pos_start = int(data[2])
+            if (dcount == 0):
+                pos_start = int(data[2])
             if data[1] == chrom:
                 delta = delta+1
                 try:
@@ -66,6 +67,8 @@ def build_transform(mod_file, logger):
                 except KeyError:
                     transform[chrom] = [(pos, delta),]
                 delta = delta - 1
+
+        delta = delta + dcount
 
         if data[1] != chrom:
             delta = 0 
