@@ -60,7 +60,7 @@ def build_transform(mod_file, logger):
             except KeyError:
                 transform[chrom] = [(pos, delta),]
                 """ transform[chrom] = [(int(data[2]), delta),] """
-            pos++
+            pos = pos + 1
     logger.info("Chromosome MODification transform built")
     return transform
 
