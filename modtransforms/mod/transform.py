@@ -47,7 +47,7 @@ def build_transform(mod_file, logger):
         except:
             break
 
-        dcount = 0
+        """ dcount = 0
         while (data[0] == 'd'):
             dcount = dcount + 1
             if data[1] != chrom:
@@ -58,16 +58,15 @@ def build_transform(mod_file, logger):
             
             try:
                 transform[chrom].append((pos, delta))
-                """ transform[chrom].append((int(data[2]), delta)) """
             except KeyError:
                 transform[chrom] = [(pos, delta),]
-                """ transform[chrom] = [(int(data[2]), delta),] """
 
             try:
                 data = mod.next().split()
             except:
                 break
-            
+        """
+                
         """ delta = delta + dcount """
 
         if data[1] != chrom:
