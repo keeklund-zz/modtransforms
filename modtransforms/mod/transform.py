@@ -41,6 +41,8 @@ def build_transform(mod_file, logger):
     adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
     
     chrom = ''
+    delta = 0
+    pos = 0
     while mod:
         try:
             data = mod.next().split()
