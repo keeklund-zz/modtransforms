@@ -47,27 +47,28 @@ def build_transform(mod_file, logger):
         except:
             break
 
-        deleted = 0
-        pos = int(data[2])
+        dcount = 0
         while (data[0] == 'd'):
-            deleted = 1
+            dcount = dcount + 1
             if data[1] != chrom:
                 delta = 0 
                 chrom = data[1]
             delta = delta-1
+            pos = int(data[2])
             
-            try:
-                data = mod.next().split()
-            except:
-                break
-            
-        if deleted == 1:
             try:
                 transform[chrom].append((pos, delta))
                 """ transform[chrom].append((int(data[2]), delta)) """
             except KeyError:
                 transform[chrom] = [(pos, delta),]
                 """ transform[chrom] = [(int(data[2]), delta),] """
+
+            try:
+                data = mod.next().split()
+            except:
+                break
+            
+        """ delta = delta + dcount """
 
         if data[1] != chrom:
             delta = 0 
