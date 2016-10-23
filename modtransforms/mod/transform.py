@@ -11,7 +11,8 @@ def do_nothing(data, delta):
 def addition(data, delta):
     assert isinstance(data, str), "Data must be type str."
     assert isinstance(delta, int), "Delta must be type int."
-    return delta + len(data)
+    return delta + 1
+"""    return delta + len(data) """
 
 def subtraction(data, delta):
     assert isinstance(data, str), "Data must be type str."
@@ -49,12 +50,17 @@ def build_transform(mod_file, logger):
             chrom = data[1]
 
         handler = adjustment_direction.get(data[0], error_handler)
-        delta = handler(data[3], delta)
+        pos = int(data[2])
 
-        try:
-            transform[chrom].append((int(data[2]), delta))
-        except KeyError:
-            transform[chrom] = [(int(data[2]), delta),]
+        for i in range(0, len(data[3])): 
+            delta = handler(data[3], delta)
+            try:
+                transform[chrom].append(pos, delta))
+                """ transform[chrom].append((int(data[2]), delta)) """
+            except KeyError:
+                transform[chrom] = [(pos, delta),]
+                """ transform[chrom] = [(int(data[2]), delta),] """
+            pos++
     logger.info("Chromosome MODification transform built")
     return transform
 
