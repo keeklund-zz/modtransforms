@@ -89,7 +89,7 @@ def build_transform(mod_file, logger):
                 delta = delta - 1
                 pos = pos + 1
                 try:
-                    transform[chrom].append(pos, delta))
+                    transform[chrom].append((pos, delta))
                     """ transform[chrom].append((int(data[2]), delta)) """
                 except KeyError:
                     transform[chrom] = [(pos, delta),]
