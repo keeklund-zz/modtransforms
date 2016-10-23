@@ -82,7 +82,7 @@ def build_transform(mod_file, logger):
                 except KeyError:
                     transform[chrom] = [(pos, delta),]
                 delta = delta - 1
-            delta = delta + dcount - 1
+            delta = delta + dcount - 2
 
         handler = adjustment_direction.get(data[0], error_handler)
         pos = int(data[2])
