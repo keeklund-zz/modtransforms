@@ -55,7 +55,7 @@ def build_transform(mod_file, logger):
         for i in range(0, len(data[3])): 
             delta = handler(data[3], delta)
             try:
-                transform[chrom].append(pos, delta))
+                transform[chrom].append((pos, delta))
                 """ transform[chrom].append((int(data[2]), delta)) """
             except KeyError:
                 transform[chrom] = [(pos, delta),]
