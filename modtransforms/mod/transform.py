@@ -47,17 +47,32 @@ def build_transform(mod_file, logger):
         except:
             break
 
+        if data[1] != chrom:
+            delta = 0 
+            chrom = data[1]
+
         dcount = 0
         while (data[0] == 'd'):
-            dcount = dcount + 1
-            if (dcount == 0):
+            if data[1] != chrom:
+                for i in range (0, dcount):
+                    pos = pos_start + i
+                    try:
+                        transform[chrom].append((pos, delta))
+                    except KeyError:
+                        transform[chrom] = [(pos, delta),]
+                    delta = delta - 1
+                delta = 0 
+                chrom = data[1]
+                dcount = 0
+
+            if dcount == 0:
                 pos_start = int(data[2])
-            if data[1] == chrom:
-                delta = delta+1
-                try:
-                    data = mod.next().split()
-                except:
-                    break                   
+            dcount = dcount + 1
+            delta = delta + 1
+            try:
+                data = mod.next().split()
+            except:
+                break                                   
             
         if (dcount > 0):
             for i in range (0, dcount):
@@ -69,10 +84,6 @@ def build_transform(mod_file, logger):
                 delta = delta - 1
 
         delta = delta + dcount
-
-        if data[1] != chrom:
-            delta = 0 
-            chrom = data[1]
 
         handler = adjustment_direction.get(data[0], error_handler)
         pos = int(data[2])
