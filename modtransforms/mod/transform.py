@@ -58,7 +58,7 @@ def build_transform(mod_file, logger):
 
             if data[1] != chrom:
                 try:
-                    transform[chrom].append(pos_start, delta)
+                    transform[chrom].append((pos_start, delta))
                 except KeyError:
                     transform[chrom] = [(pos_start, delta),]
                 delta = 0 
@@ -75,7 +75,7 @@ def build_transform(mod_file, logger):
             
         if (dcount > 0):
             try:
-                transform[chrom].append(pos_start, delta)
+                transform[chrom].append((pos_start, delta))
             except KeyError:
                 transform[chrom] = [(pos, delta),]
             """ delta = delta + 1 """
@@ -88,7 +88,7 @@ def build_transform(mod_file, logger):
                 delta = delta - 1
                 pos = pos + 1
                 try:
-                    transform[chrom].append(pos, delta)
+                    transform[chrom].append((pos, delta))
                 except KeyError:
                     transform[chrom] = [(pos, delta),]
 
