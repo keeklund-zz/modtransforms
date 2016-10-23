@@ -75,14 +75,17 @@ def build_transform(mod_file, logger):
                 break                                   
             
         if (dcount > 0):
-            for i in range (0, dcount):
+            """ for i in range (0, dcount):
                 pos = pos_start + i
-                try:
-                    transform[chrom].append((pos, delta))
-                except KeyError:
-                    transform[chrom] = [(pos, delta),]
-                delta = delta - 1
-            delta = delta + dcount - 2
+"""
+            try:
+                transform[chrom].append((pos_start, delta))
+            except KeyError:
+                transform[chrom] = [(pos, delta),]
+            delta = delta + 1
+"""                delta = delta - 1
+            delta = delta + dcount - 2 """
+
 
         handler = adjustment_direction.get(data[0], error_handler)
         pos = int(data[2])
