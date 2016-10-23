@@ -38,7 +38,7 @@ def build_transform(mod_file, logger):
     mod = gen_mod(mod_file)
     transform = {}
 
-    adjustment_direction = {'s': do_nothing, 'd': subtraction, 'i': addition}
+    adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
     
     chrom = ''
     while mod:
@@ -47,27 +47,25 @@ def build_transform(mod_file, logger):
         except:
             break
 
-        """ dcount = 0
+        dcount = 0
         while (data[0] == 'd'):
             dcount = dcount + 1
-            if data[1] != chrom:
-                delta = 0 
-                chrom = data[1]
-            delta = delta-1
-            pos = int(data[2])
+            pos_start = int(data[2])
+            if data[1] == chrom:
+                delta = delta+1
+                try:
+                    data = mod.next().split()
+                except:
+                    break                   
             
-            try:
-                transform[chrom].append((pos, delta))
-            except KeyError:
-                transform[chrom] = [(pos, delta),]
-
-            try:
-                data = mod.next().split()
-            except:
-                break
-        """
-                
-        """ delta = delta + dcount """
+        if (dcount > 0):
+            for i in range (0, dcount):
+                pos = pos_start + i
+                try:
+                    transform[chrom].append((pos, delta))
+                except KeyError:
+                    transform[chrom] = [(pos, delta),]
+                delta = delta - 1
 
         if data[1] != chrom:
             delta = 0 
