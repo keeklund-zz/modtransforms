@@ -59,7 +59,7 @@ def build_transform(mod_file, logger):
             else:
                 if data[1] != chrom:
                     try:
-                        transform[chrom].append((pos_start, delta))
+                        transform[chrom].append(pos_start, delta))
                     except KeyError:
                         transform[chrom] = [(pos_start, delta),]
                         delta = 0 
@@ -75,7 +75,7 @@ def build_transform(mod_file, logger):
             
         if (dcount > 0):
             try:
-                transform[chrom].append((pos_start, delta))
+                transform[chrom].append(pos_start, delta))
             except KeyError:
                 transform[chrom] = [(pos, delta),]
             """ delta = delta + 1 """
@@ -85,22 +85,18 @@ def build_transform(mod_file, logger):
 
         if (data[0] == 'i'):
             for i in range(0, len(data[3])): 
-                """ delta = handler(data[3], delta) """
                 delta = delta - 1
                 pos = pos + 1
                 try:
-                    transform[chrom].append((pos, delta))
-                    """ transform[chrom].append((int(data[2]), delta)) """
+                    transform[chrom].append(pos, delta))
                 except KeyError:
                     transform[chrom] = [(pos, delta),]
-                    """ transform[chrom] = [(int(data[2]), delta),] """
 
-        if (data[0] == 's'):
+        """ if (data[0] == 's'):
                 try:
-                    transform[chrom].append((data[2], delta))
-                    """ transform[chrom].append((int(data[2]), delta)) """
+                    transform[chrom].append(int(data[2]), delta))
                 except KeyError:
-                    transform[chrom] = [(data[2], delta),]
+                    transform[chrom] = [(data[2], delta),] """
 
 
     logger.info("Chromosome MODification transform built")
