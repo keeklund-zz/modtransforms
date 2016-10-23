@@ -56,15 +56,15 @@ def build_transform(mod_file, logger):
             if dcount == 0:
                 pos_start = int(data[2])
 
-            else:
-                if data[1] != chrom:
-                    try:
-                        transform[chrom].append(pos_start, delta))
-                    except KeyError:
-                        transform[chrom] = [(pos_start, delta),]
-                        delta = 0 
-                        chrom = data[1]
-                        dcount = 0
+            if data[1] != chrom:
+                try:
+                    transform[chrom].append(pos_start, delta)
+                except KeyError:
+                    transform[chrom] = [(pos_start, delta),]
+                delta = 0 
+                chrom = data[1]
+                dcount = 0
+                pos_start = int(data[2])
 
             dcount = dcount + 1
             delta = delta + 1
@@ -75,26 +75,26 @@ def build_transform(mod_file, logger):
             
         if (dcount > 0):
             try:
-                transform[chrom].append(pos_start, delta))
+                transform[chrom].append(pos_start, delta)
             except KeyError:
                 transform[chrom] = [(pos, delta),]
             """ delta = delta + 1 """
 
-        handler = adjustment_direction.get(data[0], error_handler)
-        pos = int(data[2])
+        """ handler = adjustment_direction.get(data[0], error_handler) """
 
         if (data[0] == 'i'):
+            pos = int(data[2])
             for i in range(0, len(data[3])): 
                 delta = delta - 1
                 pos = pos + 1
                 try:
-                    transform[chrom].append(pos, delta))
+                    transform[chrom].append(pos, delta)
                 except KeyError:
                     transform[chrom] = [(pos, delta),]
 
         """ if (data[0] == 's'):
                 try:
-                    transform[chrom].append(int(data[2]), delta))
+                    transform[chrom].append(int(data[2]), delta)
                 except KeyError:
                     transform[chrom] = [(data[2], delta),] """
 
