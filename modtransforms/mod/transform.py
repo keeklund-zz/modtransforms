@@ -84,7 +84,7 @@ def build_transform(mod_file, logger):
         if (data[0] == 'i'):
             for i in range(0, len(data[3])): 
                 """ delta = handler(data[3], delta) """
-                delta = delta + 1
+                delta = delta - 1
                 pos = pos + 1
                 try:
                     transform[chrom].append((pos, delta))
