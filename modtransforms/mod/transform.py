@@ -17,7 +17,8 @@ def addition(data, delta):
 def subtraction(data, delta):
     assert isinstance(data, str), "Data must be type str."
     assert isinstance(delta, int), "Delta must be type int."
-    return delta - len(data)
+    return delta - 1
+"""    return delta - len(data) """
 
 def error_handler(data, delta):
     assert isinstance(data, str), "Data must be type str."
