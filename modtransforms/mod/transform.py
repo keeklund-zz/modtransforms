@@ -52,7 +52,7 @@ def build_transform(mod_file, logger):
         if data[1] != chrom:
             delta = 0 
             chrom = data[1]
-            transform[chrom].append((0, delta))
+            transform[chrom].append((1, delta))
 
         dcount = 0
         while (data[0] == 'd'):
@@ -68,7 +68,7 @@ def build_transform(mod_file, logger):
                 chrom = data[1]
                 dcount = 0
                 pos_start = int(data[2])
-                transform[chrom].append((0, delta))
+                transform[chrom].append((1, delta))
 
             dcount = dcount + 1
             delta = delta + 1
