@@ -61,20 +61,20 @@ def build_transform(mod_file, logger):
         while (data[0] == 'd'):
             if dcount == 0:
                 pos_start = int(data[2])
-                try:
+                """try:
                     transform[chrom].append((pos_start - 1, delta))
                 except KeyError:
-                    transform[chrom] = [(pos_start - 1, delta),]
+                    transform[chrom] = [(pos_start - 1, delta),]"""
 
             if data[1] != chrom:
                 try:
                     transform[chrom].append((pos_start, delta))
                 except KeyError:
                     transform[chrom] = [(pos_start, delta),]
-                try:
+                """try:
                     transform[chrom].append((pos_start + 1, delta))
                 except KeyError:
-                    transform[chrom] = [(pos_start + 1, delta),]
+                    transform[chrom] = [(pos_start + 1, delta),]"""
                 delta = 0 
                 chrom = data[1]
                 dcount = 0
@@ -96,20 +96,20 @@ def build_transform(mod_file, logger):
                 transform[chrom].append((pos_start, delta))
             except KeyError:
                 transform[chrom] = [(pos_start, delta),]
-            try:
+            """try:
                 transform[chrom].append((pos_start + 1, delta))
             except KeyError:
-                transform[chrom] = [(pos_start + 1, delta),]
+                transform[chrom] = [(pos_start + 1, delta),]"""
             """ delta = delta + 1 """
 
         """ handler = adjustment_direction.get(data[0], error_handler) """
 
         if (data[0] == 'i'):
             pos = int(data[2]) + 1
-            try:
+            """try:
                 transform[chrom].append((int(data[2]), delta))
             except KeyError:
-                transform[chrom] = [(int(data[2]), delta),]
+                transform[chrom] = [(int(data[2]), delta),]"""
             for i in range(0, len(data[3])): 
                 delta = delta - 1
                 pos = pos + 1
