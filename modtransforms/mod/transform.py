@@ -11,14 +11,12 @@ def do_nothing(data, delta):
 def addition(data, delta):
     assert isinstance(data, str), "Data must be type str."
     assert isinstance(delta, int), "Delta must be type int."
-    return delta + 1
-"""    return delta + len(data) """
+    return delta + len(data)
 
 def subtraction(data, delta):
     assert isinstance(data, str), "Data must be type str."
     assert isinstance(delta, int), "Delta must be type int."
-    return delta - 1
-"""    return delta - len(data) """
+    return delta - len(data)
 
 def error_handler(data, delta):
     assert isinstance(data, str), "Data must be type str."
@@ -58,11 +56,12 @@ def build_transform(mod_file, logger):
                 transform[chrom] = [(1, delta),]
 
         dcount = 0
+        curr_pos = int(data[2]) - 1
         while (data[0] == 'd'):
             if dcount == 0:
                 pos_start = int(data[2]) - delta
-
-            if data[1] != chrom:
+        
+            if data[1] != chrom: 
                 try:
                     transform[chrom].append((pos_start, delta))
                 except KeyError:
@@ -71,13 +70,23 @@ def build_transform(mod_file, logger):
                 chrom = data[1]
                 dcount = 0
                 pos_start = int(data[2]) - delta
+                curr_pos = int(data[2]) - 1
                 try:
                     transform[chrom].append((1, delta))
                 except KeyError:
                     transform[chrom] = [(1, delta),]
 
+            if int(data[2]) > (curr_pos + 1):
+                try:
+                    transform[chrom].append((pos_start, delta))
+                except KeyError:
+                    transform[chrom] = [(pos_start, delta),]
+                dcount = 0
+                pos_start = int(data[2]) - delta
+
             dcount = dcount + 1
             delta = delta + 1
+            curr_pos = int(data[2])
             try:
                 data = mod.next().split()
             except:
@@ -92,7 +101,7 @@ def build_transform(mod_file, logger):
         """ handler = adjustment_direction.get(data[0], error_handler) """
 
         if (data[0] == 'i'):
-            pos = int(data[2])
+            pos = int(data[2]) - delta
             for i in range(0, len(data[3])): 
                 delta = delta - 1
                 pos = pos + 1
