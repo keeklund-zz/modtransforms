@@ -93,7 +93,7 @@ def build_transform(mod_file, logger):
         """ handler = adjustment_direction.get(data[0], error_handler) """
 
         if (data[0] == 'i'):
-            pos = int(data[2])
+            pos = int(data[2]) + 1
             for i in range(0, len(data[3])): 
                 delta = delta - 1
                 pos = pos + 1
