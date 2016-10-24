@@ -105,7 +105,7 @@ def build_transform(mod_file, logger):
         """ handler = adjustment_direction.get(data[0], error_handler) """
 
         if (data[0] == 'i'):
-            pos = int(data[2]) + 1
+            pos = int(data[2])
             """try:
                 transform[chrom].append((int(data[2]), delta))
             except KeyError:
