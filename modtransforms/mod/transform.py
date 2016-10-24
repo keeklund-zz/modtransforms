@@ -36,6 +36,7 @@ def build_transform(mod_file, logger):
     mod = gen_mod(mod_file)
     transform = {}
 
+    """ No longer used - Karl's original code """
     adjustment_direction = {'s': do_nothing, 'd': addition, 'i': subtraction}
     
     chrom = ''
@@ -50,40 +51,45 @@ def build_transform(mod_file, logger):
         if data[1] != chrom:
             delta = 0 
             chrom = data[1]
+            """ Initialize beginning of chromosome """
             try:
                 transform[chrom].append((1, delta))
             except KeyError:
                 transform[chrom] = [(1, delta),]
 
+        """ Deletion in target, so must insert bases to compensate """
         dcount = 0
         curr_pos = int(data[2]) - 1
         while (data[0] == 'd'):
             if dcount == 0:
-                pos_start = int(data[2]) - delta
+                pos = int(data[2]) - delta
         
+            """ If new chromosome, write out and start next delta """
             if data[1] != chrom: 
                 try:
-                    transform[chrom].append((pos_start, delta))
+                    transform[chrom].append((pos, delta))
                 except KeyError:
-                    transform[chrom] = [(pos_start, delta),]
+                    transform[chrom] = [(pos, delta),]
                 delta = 0
                 chrom = data[1]
                 dcount = 0
-                pos_start = int(data[2]) - delta
+                pos = int(data[2]) - delta
                 curr_pos = int(data[2]) - 1
                 try:
                     transform[chrom].append((1, delta))
                 except KeyError:
                     transform[chrom] = [(1, delta),]
 
-            if int(data[2]) > (curr_pos + 1):
+            """ Make sure consecutive deletes are for consecutive bases """
+            if int(data[2]) != (curr_pos + 1):
                 try:
-                    transform[chrom].append((pos_start, delta))
+                    transform[chrom].append((pos, delta))
                 except KeyError:
-                    transform[chrom] = [(pos_start, delta),]
+                    transform[chrom] = [(pos, delta),]
                 dcount = 0
-                pos_start = int(data[2]) - delta
+                pos = int(data[2]) - delta
 
+            """ Increment counters for deletion """
             dcount = dcount + 1
             delta = delta + 1
             curr_pos = int(data[2])
@@ -91,17 +97,21 @@ def build_transform(mod_file, logger):
                 data = mod.next().split()
             except:
                 break                                   
-            
+
+        """ Record deleted bases """
         if (dcount > 0):
             try:
-                transform[chrom].append((pos_start, delta))
+                transform[chrom].append((pos, delta))
             except KeyError:
-                transform[chrom] = [(pos_start, delta),]
+                transform[chrom] = [(pos, delta),]
 
+        """ Original code from Karl """
         """ handler = adjustment_direction.get(data[0], error_handler) """
 
+        """ Insertion in target, so must delete these inserted bases """
         if (data[0] == 'i'):
             pos = int(data[2]) - delta
+            """ Multiple bases can be inserted, and each must be accounted for """
             for i in range(0, len(data[3])): 
                 delta = delta - 1
                 pos = pos + 1
