@@ -126,7 +126,6 @@ def gtf(args, logger):
                         "CONTIG: '%s' is not in MOD File." % \
                         curr_chrom)
                     positions, deltas = (), ()
-                    continue
             try:
                 start_delta = find_delta(positions, 
                                          deltas, 
@@ -162,7 +161,6 @@ def smrna_12_bed(args, logger):
                             "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
-                        continue
                 try:
                     c_start_delta = find_delta(positions, 
                                                deltas, 
@@ -212,7 +210,6 @@ def smrna_bed(args, logger):
                             "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
-                        continue
                 try:
                     start_delta = find_delta(positions, 
                                              deltas, 
@@ -247,7 +244,6 @@ def smrna_gff3(args, logger):
                             "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
-                        continue
                 try:
                     start_delta = find_delta(positions, 
                                              deltas, 
@@ -285,7 +281,6 @@ def smrna_lib_fa(args, logger):
                             "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
-                        continue
                 try:
                     start_delta = find_delta(positions, 
                                              deltas, 
@@ -322,7 +317,6 @@ def smrna_table_txt(args, logger):
                         "CONTIG: '%s' is not in MOD File." % \
                         curr_chrom)
                     positions, deltas = (), ()
-                    continue
             try:
                 start_delta = find_delta(positions, 
                                          deltas, 
@@ -357,7 +351,6 @@ def smrna_txt(args, logger):
                         "CONTIG: '%s' is not in MOD File." % \
                         curr_chrom)
                     positions, deltas = (), ()
-                    continue
             try:
                 start_delta = find_delta(positions, 
                                          deltas, 
@@ -393,7 +386,6 @@ def npf(args, logger):
                             "CONTIG: '%s' is not in MOD File." % \
                             curr_chrom)
                         positions, deltas = (), ()
-                        continue
                 try:
                     start_delta = find_delta(positions, 
                                              deltas, 
