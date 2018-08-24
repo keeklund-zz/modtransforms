@@ -69,7 +69,7 @@ def bam(args, logger):
     chrom_mods = build_transform(args.mod, logger)
     input_ = AlignmentFile(args.input, 'rb')
 
-    header = update_header(input_.header.copy(), args.chrom_sizes)
+    header = update_header(input_.header.as_dict(), args.chrom_sizes)
     output = AlignmentFile(args.output, 'wb', header=header)
 
     curr_chrom = ""
