@@ -3,6 +3,8 @@
 *.swp
 *.swo
 *.pyc
+.DS_Store
+.idea
 
 MANIFEST
 
