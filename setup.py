@@ -10,12 +10,12 @@ package_data = {}
 
 # include useful and/or necessary scripts
 scripts = ['bin/modtransform_simple',
-        'bin/modtransform_seq',]
+           'bin/modtransform_seq', ]
 
 # python packages required for install
 install_requires = [
     "argparse >= 1.3.0",
-    "pysam >= 0.8.2.1",
+    "pysam >= 0.14.1",
 ]
 
 setup_args = {
